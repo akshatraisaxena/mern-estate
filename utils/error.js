@@ -1,4 +1,4 @@
-export const eroorHnadler=(stastusCode,message)=>{
+export const errorHnadler=(stastusCode,message)=>{
     const error = new Error();
     error.stastusCode=stastusCode;
     error.message=message;
