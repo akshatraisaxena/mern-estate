@@ -54,6 +54,10 @@ function SignUp  (){
         <div className='flex items-center justify-center mt-2'>
           <p className='font-mono text-sm'>Already have an account?</p>
           <Link to={"/sign-in"}> <span className='text-blue-600 font-mono text-sm'>SignIn</span></Link>
+          <br />
+          {error && (
+              <p className="text-red-600 text-sm text-center mt-2">{error}</p> 
+            )}
         </div>
       </div>
     </div>
