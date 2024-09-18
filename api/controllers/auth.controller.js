@@ -48,7 +48,10 @@ export const google = async (req,res ,next)=>{
             // slice(-8) means wqe just want the last 8 digits of passwrd,we done it twice so that we can get a 16 digit secure pwd
             const hashedPassword = bcryptjs.hashSync(genratedPassword,10);
             const newUser = new User({username:req.body.name.split(" ").join("").toLowerCase()+ 
-                Math.random().toString(36).slice(-4),email:req.body.email,password:hashedPassword,avatar:req.body.photo});
+                Math.random().toString(36).slice(-4),
+                email:req.body.email,
+                password:hashedPassword,
+                avatar:req.body.photo});
             await newUser.save();
             const token = jwt.sign({_id:newUser._id},process.env.JWT_SECRET);
             const{password:pass,...rest}=newUser._doc;
