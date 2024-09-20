@@ -13,7 +13,7 @@ export default function Oauth(){
             const provider= new GoogleAuthProvider()
             const auth = getAuth(app)
             const result = await signInWithPopup(auth,provider)
-
+            //  console.log("Google Login Result:", result.user)
             const res= await fetch('/api/auth/google',{
                 method:'POST',
                 headers:{
