@@ -4,7 +4,8 @@ import { useRef, useEffect } from 'react'
 import {getDownloadURL, getStorage,  ref, uploadBytesResumable } from 'firebase/storage'
 import { app } from '../firebase'
 import {updateUserStart, updateUserSuccess, updateUserFailure} from '../redux/user/userSlice';
-import { useDispatch } from 'react-redux'
+import { useDispatch } from 'react-redux';
+import axios from 'axios';
 
 const Profile = () => {
   const fileRef = useRef(null)
@@ -51,16 +52,20 @@ const Profile = () => {
   }
   const handleSubmit =async(e)=>{
     e.preventDefault();
+    dispatch(updateUserStart());
     try {
-      dispatch(updateUserStart());
-       const res = await fetch(`/api/user/update/${currentUser._id}`,{
-        method:'POST',
-        headers:{'content-Type':'application/json'},
-        body: JSON.stringify(formData), 
-        credentials:'include'
-      }); 
+      const res = await axios.put(
+                `/api/user/update/${currentUser._id}`,
+                formData, // Form data including the updated fields
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    withCredentials: true, // Send cookies with the request
+                }
+            );
       console.log("Response:", res);
-      const data = await res.json();
+      const data = res.data;
       if (data.success === false){
         dispatch(updateUserFailure(data.message));
         return;
