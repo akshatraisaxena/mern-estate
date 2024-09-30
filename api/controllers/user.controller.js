@@ -1,4 +1,3 @@
-
 import bcryptjs from 'bcryptjs'
 import User from '../models/user.model.js'
 import { errorHandler } from '../../utils/error.js'
@@ -8,20 +7,36 @@ export  const test = (req,res)=>{
 }
 
 export const updateUser = async (req,res,next)=>{
-    if (req.user.id !== req.params.id)return next(errorHandler(401,"You can only update yourown id"))
+    console.log('Entering updateUser function');
+    console.log('Request User:', req.user);
+    console.log('Request Params:', req.params);
+    console.log('Current User ID:', req.user._id);
+    console.log('User ID from Params:', req.params.id);
+    console.log('Request Body:', req.body);
+    if (req.user.id !== req.params.id){
+        return next(errorHandler(401,"You can only update your own id"))
+    }
     try {
-        if(req.body.password ){req.body.password = bcryptjs.hashSync(req.body.password,10)}
+        if(req.body.password ){
+            req.body.password = bcryptjs.hashSync(req.body.password,10)
+        }
+        console.log('Updating user in the database...');
         const updatedUser = await User.findByIdAndUpdate(req.params.id, {
             $set:{
                 username: req.body.username,
                 email: req.body.email,
                 password: req.body.password,
                 avatar: req.body.avatar
-            }
+            },
         }, {new:true})
-        const {password, ...others}= updatedUser._doc
+        console.log('Updated User:', updatedUser); 
+        if(!updatedUser){
+            return next(errorHandler(404,"User not found"))
+        }
+        const {password, ...others}= updatedUser._doc;
         res.status(200).json(others)
     } catch (error) {
-        next(error)
+        console.error('Update error:', error);  // Log the specific error
+        next(errorHandler(500, "An error occurred while updating the user."));
     }
 }
