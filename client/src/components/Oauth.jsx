@@ -19,7 +19,8 @@ export default function Oauth(){
                 headers:{
                     'content-type': 'application/json',
                 },
-                body: JSON.stringify({name:result.user.displayName, 
+                body: JSON.stringify({
+                    name:result.user.displayName, 
                     email:result.user.email, 
                     photo:result.user.photoURL}),
             })

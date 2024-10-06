@@ -25,21 +25,14 @@ const Header = () => {
                 <Link to='/about'>
                  <li className='hidden sm:inline text-slate-700 hover:underline'>About</li>
                 </Link>
-               
-                  {currentUser ? (
-                    <Link to='/profile'>
-                     <img
-                        src={currentUser.avatar}
-                        alt='profile'
-                        className='w-10 h-10 rounded-full'
-                     />
-                    </Link>
-                     ) : (
-                      <Link to='/sign-in'>
-                        <li className='text-slate-700 hover:underline'>Sign In</li>
-                       </Link> 
-                     )}
-                     </ul>
+                <Link to='/profile'>
+            {currentUser ? (
+              <img className='rounded-full h-7 w-7 object-cover' src={currentUser.avatar} alt='profile' />
+            ) : (
+              <li className=' text-slate-700 hover:underline'> Sign in</li>
+            )}
+            </Link>
+             </ul>
         </div>
     </header>
   )
