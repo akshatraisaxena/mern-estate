@@ -4,15 +4,17 @@ import { useState } from 'react';
 import { app } from '../firebase';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { type } from 'express/lib/response';
 export default function CreateListing() {
-const navigate = useNavigate
- const currentUser = useSelector(state => state.user);
- const [files, setFiles] = useState([])
+const navigate = useNavigate();
+ const {currentUser} = useSelector((state) => state.user);
+ const [files, setFiles] = useState([]);
  const [formdata, setFormdata] = useState({
     imageUrls:[],
     name:'',
     description:'',
     address:'',
+    type:'rent',
     bedrooms: 1,
     bathrooms:1,
     regularPrice:50,
@@ -21,10 +23,10 @@ const navigate = useNavigate
     parking:false,
     furnished:false,
  });
- const [imageUploadError, setimageUploadError] = useState(false)
+ const [imageUploadError, setimageUploadError] = useState(false);
  const [uploading, setuploading] = useState(false);
- const [error, setError] = useState()
- const [loading, setLoading] = useState()
+ const [error, setError] = useState(false);
+ const [loading, setLoading] = useState(false);
  const handleImageSubmit = (e)=>{
     if (files.length>0 && files.length + formdata.imageUrls.length <7){
         setuploading(true);
@@ -75,43 +77,51 @@ const navigate = useNavigate
     if(e.target.id === 'sale' || e.target.id === 'rent'){
         setFormdata({
             ...formdata,
-            type: e.target.id
-        })
+            type: e.target.id,
+        });
     }
     if (e.target.id === 'parking' || e.target.id === 'furnished' || e.target.id === 'offer'){
         setFormdata({
             ...formdata,
-            [e.target.id]:e.target.checked
+            [e.target.id]:e.target.checked,
         })
     }
     if (e.target.type === 'number' || e.target.type === 'text' || e.target.type === 'textarea'){
         setFormdata({
             ...formdata,
-            [e.target.id]: e.target.value
-        })
+            [e.target.id]: e.target.value,
+        });
     }
- }
+ };
  const handleSubmit=async(e)=>{
     e.preventDefault();
+    setLoading(true); 
     try {
-        if (formdata.imageUrls.length < 1) return setError('You must upload atleast one image')
-        if (formdata.regularPrice < formdata.discountPrice)return setError('Discount price must be less than regular price')
+        if (formdata.imageUrls.length < 1)
+           return setError('You must upload atleast one image')
+        if (+formdata.regularPrice < +formdata.discountPrice)
+          return setError('Discount price must be less than regular price')
+        setLoading(true);
         setError(false);
+        // const token = localStorage.getItem('token'); 
         const res = await fetch('/api/listing/create',{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                // 'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({
                 ...formdata,
-             userRef:currentUser._id}),
+             userRef:currentUser._id,
+            }),
         });
         const data = await res.json();
         setLoading(false);
         if (data.success === false){
             setError(data.message);
+            return;
         }
-        navigate(`/listing/${data._id}`)
+        navigate(`/listing/${data._id}`);
     } catch (error) {
         setError(error.message);
         setLoading(false);
